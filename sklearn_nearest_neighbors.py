@@ -12,9 +12,7 @@ from six import BytesIO
 
 def install(package):
     subprocess.call([sys.executable, "-m", "pip", "install", package])
-
 install('s3fs')
-
 
 def _npy_dumps(data):
     """
@@ -24,18 +22,15 @@ def _npy_dumps(data):
     np.save(buffer, data)
     return buffer.getvalue()
 
-
 def convert_to_list(raw_review_vec):
     review_vec_trimmed = raw_review_vec.replace('[', '').replace(']', '')
     review_vec = np.fromstring(review_vec_trimmed, dtype=float, sep='  ')
     review_vec_list = review_vec.tolist()
     return review_vec_list
 
-
 def model_fn(model_dir):
     clf = joblib.load(os.path.join(model_dir, "model.joblib"))
     return clf
-
 
 def predict_fn(input_data, model):
     input_data_reshaped = input_data.reshape(1, -1)
@@ -46,7 +41,6 @@ def predict_fn(input_data, model):
     print('predict_fn output is', nearest_neighbors)
     return np.array(nearest_neighbors)
 
-
 def output_fn(prediction_output, accept):
     if accept == 'application/x-npy':
         print('output_fn input is', prediction_output, 'in format', accept)
@@ -56,7 +50,6 @@ def output_fn(prediction_output, accept):
         return worker.Response(encoders.encode(prediction_output, accept), accept, mimetype=accept)
     else:
         raise ValueError('Accept header must be application/x-npy, but it is {}'.format(accept))
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
